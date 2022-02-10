@@ -23,7 +23,17 @@ int main() {
         freopen("output.txt", "w", stdout);
     #endif
  
-
+    ll n;
+    cin>>n;
+ 
+    while(n != 1) {
+        cout<<n<<" ";
+ 
+        if(n%2) n = 3*n + 1;
+        else n = n/2;
+    }
+ 
+    cout<<"1\n";
  
     cerr<<"time taken: "<<(float)clock()/CLOCKS_PER_SEC<<" secs\n";
  
