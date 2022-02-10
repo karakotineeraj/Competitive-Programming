@@ -22,8 +22,23 @@ int main() {
         freopen("error.txt", "w", stderr);
         freopen("output.txt", "w", stdout);
     #endif
- 
 
+    // dp[i] => Number of ways to create number 'i'
+    // dp[i] = sum(dp[i-j]) where 1 <= j <= 6
+ 
+    int n;
+    cin>>n;
+ 
+    int dp[n+1] = {0};
+    dp[0] = dp[1] = 1;
+ 
+    for(int i=2; i<=n; ++i) {
+        for(int j=1; j<=min(6,i); ++j) {
+            dp[i] = (dp[i] + dp[i-j])%M;
+        }
+    }
+ 
+    cout<<dp[n]<<endl;
  
     cerr<<"time taken: "<<(float)clock()/CLOCKS_PER_SEC<<" secs\n";
  
