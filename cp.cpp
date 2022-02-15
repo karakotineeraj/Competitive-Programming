@@ -22,8 +22,24 @@ int main() {
         freopen("error.txt", "w", stderr);
         freopen("output.txt", "w", stdout);
     #endif
- 
 
+    // Just take the modulo of sum(candies) with number of students.
+ 
+    int t, n, m;
+    cin>>t;
+
+    for(int i=1; i<=t; ++i) {
+        cin>>n>>m;
+
+        int sum = 0, c;
+        for(int j=0; j<n; ++j) {
+            cin>>c;
+
+            sum += c;
+        }
+
+        cout<<"Case #"<<i<<": "<<(sum%m)<<"\n";
+    }
  
     cerr<<"time taken: "<<(float)clock()/CLOCKS_PER_SEC<<" secs\n";
  
