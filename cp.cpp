@@ -1,53 +1,31 @@
-#include <bits/stdc++.h>
- 
-#define vi vector<int>
-#define vb vector<bool>
-#define vll vector<long long>
- 
-#define pi pair<int,int>
-#define pl pair<long,long>
- 
-#define ll long long
- 
-#define M 1000000007
- 
+#include <iostream>
+#include <string>
+
 using namespace std;
- 
-int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(nullptr);
- 
-    #ifndef ONLINE_JUDGE
-        freopen("input.txt", "r", stdin);
-        freopen("error.txt", "w", stderr);
-        freopen("output.txt", "w", stdout);
-    #endif
 
-    // Just take the modulo of sum(candies) with number of students.
- 
-    int t, n, m;
-    cin>>t;
+char vowels[] = {'A', 'E', 'I', 'O', 'U', 'a', 'e', 'i', 'o', 'u'};
 
-    for(int i=1; i<=t; ++i) {
-        cin>>n>>m;
+string GetRuler(const string& kingdom) {
+    if(kingdom[kingdom.size() - 1] == 'y' || kingdom[kingdom.size() - 1] == 'Y')
+        return "nobody";
 
-        int sum = 0, c;
-        for(int j=0; j<n; ++j) {
-            cin>>c;
-
-            sum += c;
-        }
-
-        cout<<"Case #"<<i<<": "<<(sum%m)<<"\n";
+    for(int i=0; i<10; ++i) {
+        if(kingdom[kingdom.size() - 1] == vowels[i])
+            return "Alice";
     }
- 
-    cerr<<"time taken: "<<(float)clock()/CLOCKS_PER_SEC<<" secs\n";
- 
-    #ifndef ONLINE_JUDGE
-        fclose(stdout);
-        fclose(stderr);
-        fclose(stdin);
-    #endif
- 
-    return 0;
+
+    return "Bob";
+}
+
+int main() {
+  int testcases;
+  cin >> testcases;
+  string kingdom;
+
+  for (int t = 1; t <= testcases; ++t) {
+    cin >> kingdom;
+    cout << "Case #" << t << ": " << kingdom << " is ruled by "
+         << GetRuler(kingdom) << ".\n";
+  }
+  return 0;
 }
