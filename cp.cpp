@@ -13,50 +13,24 @@
  
 using namespace std;
 
-// Use KMP Algorithm with a slight to count
-// occurences.
+// Make a Prefix Array just like in KMP to find LPS(Longest Prefix that is also a Suffix).
+// Start from the last index and go to the matching prefix & find its matching prefix and so on.
 
-vector<int> prefixArray(string p) {
+int* prefixArray(string p) {
     int n = p.size();
+    int* ans = new int[n];
 
-    vector<int> ans(n);
     ans[0] = 0;
-
     for(int i=1; i<n; ++i) {
         int j = ans[i-1];
-        while(j > 0 && p[j] != p[i])
-            j = ans[j -1];
 
-        if(p[i] == p[j])
-            ++j;
+        while(j > 0 && p[i] != p[j])
+            j = ans[j-1];
+
+        if(p[i] == p[j]) ++j;
 
         ans[i] = j;
     }
-
-    return ans;
-}
-
-int KMP(string s, string p) {
-    int n = s.size();
-    int m = p.size();
-    vector<int> pre = prefixArray(p);
-
-    int ans = 0;
-    int i = 0, j = 0;
-    while(i < n) {
-        // Modification to count occurences
-        if(j == m)
-            j = pre[j-1], ans++;
-
-        if(s[i] == p[j])
-            ++i, ++j;
-
-        else if(j) j = pre[j-1];
-        else ++i;
-    }
-
-    if(j == m)
-        ++ans;
 
     return ans;
 }
@@ -71,17 +45,21 @@ int main() {
         freopen("output.txt", "w", stdout);
     #endif
  
-    string s, p;
-    cin>>s>>p;
+    string s;
+    cin>>s;
 
-    // vector<int> pre = prefixArray(p);
-    // for(int i=0; i<p.size(); ++i)
-    //     cout<<pre[i]<<" ";
+    int* pre = prefixArray(s);
+    vector<int> ans;
 
-    // cout<<endl;
+    for(int i = s.size() - 1; pre[i] > 0; i = pre[i] - 1)
+        ans.push_back(pre[i]);
 
-    cout<<KMP(s, p)<<endl;
- 
+    int m = ans.size();
+    for(int i=0; i<m; ++i)
+        cout<<ans[m-1-i]<<" ";
+
+    cout<<endl;
+
     cerr<<"time taken: "<<(float)clock()/CLOCKS_PER_SEC<<" secs\n";
  
     #ifndef ONLINE_JUDGE
