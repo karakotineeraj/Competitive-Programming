@@ -12,6 +12,12 @@
 #define M 1000000007
  
 using namespace std;
+
+// Observation: If there are 'n' disconnected groups of nodes, then we need atleast 'n-1' roads to 
+// connect them.
+
+// Traverse using BFS with some tweaks to iterate over unvisited nodes as there can be disconnected
+// components in the graph.
  
 int main() {
     ios_base::sync_with_stdio(false);
@@ -22,98 +28,60 @@ int main() {
         freopen("error.txt", "w", stderr);
         freopen("output.txt", "w", stdout);
     #endif
-
-    // Traverse the matrix using BFS from 'B' to 'A'
-    // Along the way, give values(L, R, U, D) based on the
-    // direction of the new node w.r.t. to its previous node.
-
-    // For ex-> (1,1) -> (1,2) when both of them have values either '.' or 'A'.
-    // We give (1,2) the value of R as from (1,1), we will take a right to get to (1,2).
-
+ 
     int n, m;
     cin>>n>>m;
-
-    char g[n+2][m+2];
-    queue<pi> q;
-    for(int i=0; i<n; ++i)
-        g[i][0] = g[n-1-i][m+1] = '#';
-
-    for(int j=0; j<m; ++j)
-        g[0][j] = g[n+1][j] = '#';
-
-    int ax, ay;
-    for(int i=1; i<=n; ++i) {
-        for(int j=1; j<=m; ++j) {
-            cin>>g[i][j];
-
-            if(g[i][j] == 'B')
-                q.push({i,j});
-            
-            if(g[i][j] == 'A')
-                ax = i, ay = j;
-        }
+ 
+    vector<int> graph[n+1];
+    int u, v;
+ 
+    for(int i=0; i<m; ++i) {
+        cin>>u>>v;
+ 
+        graph[u].push_back(v);
+        graph[v].push_back(u);
     }
-
-    string ans = "NO";
-    while(!q.empty()) {
-        int x = q.front().first;
-        int y = q.front().second;
-
-        if(x == ax && y == ay) {
-            ans = "YES";
-            break;
-        }
-
-        q.pop();
-
-        if(g[x][y-1] == '.' || g[x][y-1] == 'A') {
-            q.push({x,y-1});
-            g[x][y-1] = 'R';
-        }
-
-        if(g[x][y+1] == '.' || g[x][y+1] == 'A') {
-            q.push({x,y+1});
-            g[x][y+1] = 'L';
-        }
-
-        if(g[x-1][y] == '.' || g[x-1][y] == 'A') {
-            q.push({x-1,y});
-            g[x-1][y] = 'D';
-        }
-
-        if(g[x+1][y] == '.' || g[x+1][y] == 'A') {
-            q.push({x+1,y});
-            g[x+1][y] = 'U';
-        } 
-    }
-
-    // cout<<ans<<endl;
+ 
     // for(int i=1; i<=n; ++i) {
-    //     for(int j=1; j<=m; ++j) {
-    //         cout<<g[i][j];
-    //     }
-
+    //     cout<<i<<": ";
+    //     for(int j=0; j<graph[i].size(); ++j)
+    //         cout<<graph[i][j]<<" ";
+ 
     //     cout<<endl;
     // }
-
-    if(ans == "NO") {
-        cout<<ans<<endl;
-        return 0;
+ 
+    queue<int> q;
+    vector<bool> visited(n+1, false);
+    vector<int> roads;
+    int cnt = -1;
+ 
+    for(int i=1; i<=n; ++i) {
+        if(visited[i])
+            continue;
+ 
+        // cout<<i<<" ";
+        roads.push_back(i);
+        q.push(i);
+        visited[i] = true;
+        cnt++;
+ 
+        while(!q.empty()) {
+            int tmp = q.front();
+            q.pop();
+ 
+            for(int j=0; j<graph[tmp].size(); ++j) {
+                if(visited[graph[tmp][j]])
+                    continue;
+ 
+                q.push(graph[tmp][j]);
+                visited[graph[tmp][j]] = true;
+            }
+        }
     }
-
-    string dir = "";
-    while(g[ax][ay] != 'B') {
-        dir += g[ax][ay];
-
-        // cout<<g[ax][ay]<<" "<<ax<<" "<<ay<<endl;
-
-        if(g[ax][ay] == 'D') ax++;
-        else if(g[ax][ay] == 'U') ax--;
-        else if(g[ax][ay] == 'R') ay++;
-        else if(g[ax][ay] == 'L') ay--;
-    }
-
-    cout<<ans<<endl<<dir.size()<<endl<<dir<<endl;
+    
+    cout<<cnt<<endl;
+    for(int i=1; i<=cnt; ++i)
+        cout<<roads[i-1]<<" "<<roads[i]<<"\n";
  
     cerr<<"time taken: "<<(float)clock()/CLOCKS_PER_SEC<<" secs\n";
  
