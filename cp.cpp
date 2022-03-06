@@ -13,11 +13,11 @@
  
 using namespace std;
 
-// Observation: If there are 'n' disconnected groups of nodes, then we need atleast 'n-1' roads to 
-// connect them.
+// Use an array to store the parent node and then just traverse the graph
+// and update the parent of a node only if it is -1 or else, leave the value as it is.
 
-// Traverse using BFS with some tweaks to iterate over unvisited nodes as there can be disconnected
-// components in the graph.
+// Now, start going from n to parent(n) to parent(parent(n)) .. until we reach index 1 or 
+// where parent[1] = 1. If the parent(n) = -1, then it is unreachable.
  
 int main() {
     ios_base::sync_with_stdio(false);
@@ -42,7 +42,7 @@ int main() {
         graph[v].push_back(u);
     }
  
-    // for(int i=1; i<=n; ++i) {
+    // for(int i=1; i<n; ++i) {
     //     cout<<i<<": ";
     //     for(int j=0; j<graph[i].size(); ++j)
     //         cout<<graph[i][j]<<" ";
@@ -51,38 +51,47 @@ int main() {
     // }
  
     queue<int> q;
-    vector<bool> visited(n+1, false);
-    vector<int> roads;
-    int cnt = -1;
+    vector<int> visited(n+1, -1);
  
-    for(int i=1; i<=n; ++i) {
-        if(visited[i])
-            continue;
+    q.push(1);
+    visited[1] = 1;
  
-        // cout<<i<<" ";
-        roads.push_back(i);
-        q.push(i);
-        visited[i] = true;
-        cnt++;
+    while(!q.empty()) {
+        int tmp = q.front();
+        q.pop();
  
-        while(!q.empty()) {
-            int tmp = q.front();
-            q.pop();
+        for(int j=0; j<graph[tmp].size(); ++j) {
+            if(visited[graph[tmp][j]] != -1)
+                continue;
  
-            for(int j=0; j<graph[tmp].size(); ++j) {
-                if(visited[graph[tmp][j]])
-                    continue;
- 
-                q.push(graph[tmp][j]);
-                visited[graph[tmp][j]] = true;
-            }
+            q.push(graph[tmp][j]);
+            visited[graph[tmp][j]] = tmp;
         }
     }
-    
-    cout<<cnt<<endl;
-    for(int i=1; i<=cnt; ++i)
-        cout<<roads[i-1]<<" "<<roads[i]<<"\n";
  
+    // for(int i=1; i<=n; ++i)
+    //     cout<<visited[i]<<" ";
+    // cout<<endl;
+ 
+    vector<int> ans;
+    int i = n;
+ 
+    if(visited[i] == -1) {
+        cout<<"IMPOSSIBLE\n";
+        return 0;
+    }
+ 
+    while(visited[i] != i) {
+        ans.push_back(i);
+        i = visited[i];
+    }
+ 
+    ans.push_back(1);
+ 
+    cout<<ans.size()<<endl;
+    for(int i=ans.size()-1; i>=0; i--)
+        cout<<ans[i]<<" ";
+    
     cerr<<"time taken: "<<(float)clock()/CLOCKS_PER_SEC<<" secs\n";
  
     #ifndef ONLINE_JUDGE
