@@ -23,72 +23,97 @@ int main() {
         freopen("output.txt", "w", stdout);
     #endif
 
-    // Iterate over elements of the grid and whenever we find '.',
-    // we start searching for all the connected '.' by using BFS 
-    // and converting '.' to '#', so that we don't need to iterate
-    // over them again.
-    
+    // Traverse the matrix using BFS from 'B' to 'A'
+    // Along the way, give values(L, R, U, D) based on the
+    // direction of the new node w.r.t. to its previous node.
+
+    // For ex-> (1,1) -> (1,2) when both of them have values either '.' or 'A'.
+    // We give (1,2) the value of R as from (1,1), we will take a right to get to (1,2).
+
     int n, m;
     cin>>n>>m;
 
-    char a[n][m];
-    for(int i=0; i<n; ++i) {
-        for(int j=0; j<m; ++j)
-            cin>>a[i][j];
-    }
+    char g[n+2][m+2];
+    queue<pi> q;
+    for(int i=0; i<n; ++i)
+        g[i][0] = g[n-1-i][m+1] = '#';
 
-    int cnt = 0;
-    for(int i=0; i<n; ++i) {
-        for(int j=0; j<m; ++j) {
-            if(a[i][j] == '#')
-                continue;
+    for(int j=0; j<m; ++j)
+        g[0][j] = g[n+1][j] = '#';
 
-            cnt++;
-            a[i][j] = '#';
-            queue<pi> q;
-            q.push({i,j});
+    int ax, ay;
+    for(int i=1; i<=n; ++i) {
+        for(int j=1; j<=m; ++j) {
+            cin>>g[i][j];
 
-            while(!q.empty()) {
-                pi x = q.front();
-                q.pop();
-
-                int f = x.first;
-                int s = x.second;
-
-                if(f > 0 && a[f-1][s] == '.') {
-                    a[f-1][s] = '#';
-                    q.push({f-1, s});
-                }
-
-                if(f < n-1 && a[f+1][s] == '.') {
-                    a[f+1][s] = '#';
-                    q.push({f+1, s});
-                }
-
-                if(s > 0 && a[f][s-1] == '.') {
-                    a[f][s-1] = '#';
-                    q.push({f, s-1});
-                }
-
-                if(s < m-1 && a[f][s+1] == '.') {
-                    a[f][s+1] = '#';
-                    q.push({f, s+1});
-                }
-
-                
-            }
-
-            // for(int k=0; k<n; ++k) {
-            //     for(int l=0; l<m; ++l)
-            //         cout<<a[k][l];
-            //     cout<<endl;
-            // }
-
-            // cout<<endl;
+            if(g[i][j] == 'B')
+                q.push({i,j});
+            
+            if(g[i][j] == 'A')
+                ax = i, ay = j;
         }
     }
 
-    cout<<cnt<<endl;
+    string ans = "NO";
+    while(!q.empty()) {
+        int x = q.front().first;
+        int y = q.front().second;
+
+        if(x == ax && y == ay) {
+            ans = "YES";
+            break;
+        }
+
+        q.pop();
+
+        if(g[x][y-1] == '.' || g[x][y-1] == 'A') {
+            q.push({x,y-1});
+            g[x][y-1] = 'R';
+        }
+
+        if(g[x][y+1] == '.' || g[x][y+1] == 'A') {
+            q.push({x,y+1});
+            g[x][y+1] = 'L';
+        }
+
+        if(g[x-1][y] == '.' || g[x-1][y] == 'A') {
+            q.push({x-1,y});
+            g[x-1][y] = 'D';
+        }
+
+        if(g[x+1][y] == '.' || g[x+1][y] == 'A') {
+            q.push({x+1,y});
+            g[x+1][y] = 'U';
+        } 
+    }
+
+    // cout<<ans<<endl;
+    // for(int i=1; i<=n; ++i) {
+    //     for(int j=1; j<=m; ++j) {
+    //         cout<<g[i][j];
+    //     }
+
+    //     cout<<endl;
+    // }
+
+    if(ans == "NO") {
+        cout<<ans<<endl;
+        return 0;
+    }
+
+    string dir = "";
+    while(g[ax][ay] != 'B') {
+        dir += g[ax][ay];
+
+        // cout<<g[ax][ay]<<" "<<ax<<" "<<ay<<endl;
+
+        if(g[ax][ay] == 'D') ax++;
+        else if(g[ax][ay] == 'U') ax--;
+        else if(g[ax][ay] == 'R') ay++;
+        else if(g[ax][ay] == 'L') ay--;
+    }
+
+    cout<<ans<<endl<<dir.size()<<endl<<dir<<endl;
  
     cerr<<"time taken: "<<(float)clock()/CLOCKS_PER_SEC<<" secs\n";
  
